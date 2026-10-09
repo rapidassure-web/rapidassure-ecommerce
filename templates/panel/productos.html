@@ -22,13 +22,21 @@
 
 <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
     
-    <form method="GET" id="filtroForm" style="display:flex; gap:10px; align-items: center; margin: 0;">
+    <form method="GET" id="filtroForm" style="display:flex; gap:10px; align-items: center; margin: 0; flex-wrap: wrap;">
       
       <input type="hidden" name="per_page" value="{{ per_page }}">
 
       <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 0.8em; color: #666; font-weight: bold;">Buscar producto</label>
+          <div style="position: relative; display: flex; align-items: center;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #94a3b8; font-size: 0.85rem; pointer-events: none;"></i>
+              <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre..." style="padding: 8px 10px 8px 32px; border-radius: 4px; border: 1px solid #ccc; min-width: 220px; height: 35px; box-sizing: border-box; font-size: 0.9em;">
+          </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 4px;">
           <label style="font-size: 0.8em; color: #666; font-weight: bold;">Categoría</label>
-          <select name="categoria" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px;">
+          <select name="categoria" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px; height: 35px; box-sizing: border-box;">
             <option value="">Todas las categorías</option>
             {% for c in categorias %}
               <option value="{{ c.id }}" {% if categoria_actual == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
@@ -38,7 +46,7 @@
 
       <div style="display: flex; flex-direction: column; gap: 4px;">
           <label style="font-size: 0.8em; color: #666; font-weight: bold;">Estado</label>
-          <select name="estado" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+          <select name="estado" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; height: 35px; box-sizing: border-box;">
             <option value="">Todos</option>
             <option value="disponible" {% if estado_actual == 'disponible' %}selected{% endif %}>Disponibles</option>
             <option value="agotado" {% if estado_actual == 'agotado' %}selected{% endif %}>Agotados</option>
@@ -46,17 +54,29 @@
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 4px;">
-          <label style="font-size: 0.8em; visibility: hidden;">Fantasma</label>
-          <button type="submit" class="btn-categoria" style="height: 35px; margin: 0; padding: 0 15px; display: flex; align-items: center;">Aplicar Filtros</button>
+          <label style="font-size: 0.8em; visibility: hidden;">Acción</label>
+          <button type="submit" class="btn-categoria" style="height: 35px; margin: 0; padding: 0 15px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-filter"></i> Aplicar Filtros
+          </button>
       </div>
+
+      {% if q or categoria_actual or estado_actual %}
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 0.8em; visibility: hidden;">Limpiar</label>
+          <a href="{% url 'panel_productos' %}?per_page={{ per_page }}" style="height: 35px; margin: 0; padding: 0 12px; display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: #64748b; font-size: 0.88em; border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc;" title="Limpiar búsqueda y filtros">
+              <i class="fa-solid fa-rotate-left"></i> Limpiar
+          </a>
+      </div>
+      {% endif %}
     </form>
 
     <form method="GET" style="display: flex; align-items: center; gap: 10px; margin: 0;">
+        <input type="hidden" name="q" value="{{ q }}">
         <input type="hidden" name="categoria" value="{{ categoria_actual }}">
         <input type="hidden" name="estado" value="{{ estado_actual }}">
         
         <label for="per_page" style="font-size: 0.9em; color: #555; font-weight: bold;">Mostrar:</label>
-        <select name="per_page" id="per_page" onchange="this.form.submit()" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <select name="per_page" id="per_page" onchange="this.form.submit()" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; height: 35px; box-sizing: border-box;">
             <option value="10" {% if per_page == '10' %}selected{% endif %}>10 por página</option>
             <option value="20" {% if per_page == '20' %}selected{% endif %}>20 por página</option>
             <option value="50" {% if per_page == '50' %}selected{% endif %}>50 por página</option>
@@ -205,7 +225,11 @@
       {% empty %}
       <tr>
           <td colspan="6" style="padding: 30px; text-align: center; color: #888;">
-              No se encontraron productos con estos filtros.
+              {% if q %}
+                  No se encontraron productos con el nombre "<strong>{{ q }}</strong>".
+              {% else %}
+                  No se encontraron productos con estos filtros.
+              {% endif %}
           </td>
       </tr>
       {% endfor %}
@@ -217,8 +241,8 @@
 <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; align-items: center; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: max-content; margin-left: auto; margin-right: auto;">
     
     {% if page_obj.has_previous %}
-        <a href="?page=1&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}" style="text-decoration: none; color: #666; font-size: 0.9em;">&laquo; Primera</a>
-        <a href="?page={{ page_obj.previous_page_number }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}" class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em;">Anterior</a>
+        <a href="?page=1&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}{% if q %}&q={{ q|urlencode }}{% endif %}" style="text-decoration: none; color: #666; font-size: 0.9em;">&laquo; Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}{% if q %}&q={{ q|urlencode }}{% endif %}" class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em;">Anterior</a>
     {% else %}
         <span style="color: #ccc; font-size: 0.9em;">&laquo; Primera</span>
         <span class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em; background-color: #eee; color: #aaa; cursor: not-allowed;">Anterior</span>
@@ -229,8 +253,8 @@
     </span>
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}" class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em;">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}" style="text-decoration: none; color: #666; font-size: 0.9em;">Última &raquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}{% if q %}&q={{ q|urlencode }}{% endif %}" class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em;">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&categoria={{ categoria_actual }}&estado={{ estado_actual }}&per_page={{ per_page }}{% if q %}&q={{ q|urlencode }}{% endif %}" style="text-decoration: none; color: #666; font-size: 0.9em;">Última &raquo;</a>
     {% else %}
         <span class="btn-categoria" style="padding: 6px 12px; font-size: 0.9em; background-color: #eee; color: #aaa; cursor: not-allowed;">Siguiente</span>
         <span style="color: #ccc; font-size: 0.9em;">Última &raquo;</span>

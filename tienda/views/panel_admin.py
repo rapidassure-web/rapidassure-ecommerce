@@ -89,9 +89,13 @@ def panel_home(request):
 def panel_productos(request):
     productos_list = Producto.objects.all().order_by('-id')
 
+    q = request.GET.get('q', '').strip()
     categoria_id = request.GET.get("categoria", "")
     estado = request.GET.get("estado", "")
     per_page = request.GET.get('per_page', '10')
+
+    if q:
+        productos_list = productos_list.filter(nombre__icontains=q)
 
     if categoria_id:
         productos_list = productos_list.filter(categoria_id=categoria_id)
@@ -112,7 +116,8 @@ def panel_productos(request):
         "categorias": categorias,
         "categoria_actual": categoria_id,
         "estado_actual": estado,
-        "per_page": per_page
+        "per_page": per_page,
+        "q": q
     })
 
 
