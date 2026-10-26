@@ -8,7 +8,7 @@ from .utils import get_cloudinary_url
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    imagen = models.ImageField(upload_to='categorias/', blank=True, null=True)
+    imagen = models.ImageField(upload_to='categorias/', blank=True, null=True, max_length=500)
 
     def save(self, *args, **kwargs):
         if not self.slug or slugify(self.nombre) != self.slug:
@@ -89,12 +89,12 @@ class Categoria(models.Model):
 
 class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    marca = models.CharField(max_length=100, blank=True, default='', verbose_name="Marca", help_text="Marca o fabricante del producto (ej: Zebra, Epson, Honeywell, SAT)")
+    marca = models.CharField(max_length=150, blank=True, default='', verbose_name="Marca", help_text="Marca o fabricante del producto (ej: Zebra, Epson, Honeywell, SAT)")
     nombre = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True, null=True)
     descripcion = models.TextField(blank=True)
     precio = models.IntegerField()
-    imagen = models.ImageField(upload_to='productos/')
+    imagen = models.ImageField(upload_to='productos/', max_length=500)
 
     # Nuevo campo para el control de inventario
     stock = models.PositiveIntegerField(default=0, help_text="Cantidad disponible en inventario")
@@ -116,7 +116,7 @@ class Producto(models.Model):
     especie_nombre_comun = models.CharField(max_length=150, blank=True, help_text="Ej: Terminal POS Táctil 15'', Lector Láser 2D")
     especie_nombre_cientifico = models.CharField(max_length=150, blank=True, help_text="Ej: SKU-TEC-900-V2")
     especie_habitat = models.CharField(max_length=200, blank=True, help_text="Ej: Retail, Supermercados, Bodegas y Logística")
-    especie_estado_conservacion = models.CharField(max_length=100, blank=True, help_text="Ej: Garantía 24 Meses, Norma IP65")
+    especie_estado_conservacion = models.CharField(max_length=255, blank=True, help_text="Ej: Garantía 24 Meses, Norma IP65")
     especie_dato_curioso = models.TextField(blank=True, help_text="Ficha técnica o características destacadas del equipo")
 
     @property
@@ -257,7 +257,7 @@ class Producto(models.Model):
 
 class ImagenProducto(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='imagenes_adicionales')
-    imagen = models.ImageField(upload_to='productos/galeria/')
+    imagen = models.ImageField(upload_to='productos/galeria/', max_length=500)
     orden = models.PositiveIntegerField(default=0)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
@@ -621,7 +621,7 @@ class BlogPost(models.Model):
     autor = models.CharField(max_length=100, blank=True, default='Rapidassure', help_text="Nombre del autor del artículo (opcional)")
     resumen = models.TextField(blank=True, help_text="Breve resumen para las tarjetas de blog")
     contenido = models.TextField(help_text="Contenido completo del artículo")
-    imagen = models.ImageField(upload_to='blog/', blank=True, null=True)
+    imagen = models.ImageField(upload_to='blog/', blank=True, null=True, max_length=500)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     publicado = models.BooleanField(default=True)
 
