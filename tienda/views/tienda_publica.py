@@ -79,7 +79,11 @@ def terminos_condiciones(request):
 
 
 def categoria_detail(request, slug):
-    categoria = get_object_or_404(Categoria, slug=slug)
+    try:
+        categoria = Categoria.objects.get(slug=slug)
+    except Categoria.DoesNotExist:
+        # Fallback SEO permanente (301) para cualquier categoría eliminada o renombrada
+        return redirect('/#categorias', permanent=True)
     orden = request.GET.get('orden', '').strip()
     marca_param = request.GET.get('marca', '').strip()
 

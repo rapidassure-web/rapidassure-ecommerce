@@ -23,12 +23,11 @@ from django.contrib.auth import views as auth_views
 
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
-from tienda.sitemaps import ProductoViewSitemap, CategoriaViewSitemap, StaticViewSitemap, BlogPostViewSitemap
+from tienda.sitemaps import ProductoViewSitemap, CategoriaViewSitemap, StaticViewSitemap
 
 sitemaps = {
     'productos': ProductoViewSitemap,
     'categorias': CategoriaViewSitemap,
-    'blog': BlogPostViewSitemap,
     'static': StaticViewSitemap,
 }
 

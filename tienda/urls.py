@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 from .views import CustomLoginView
 from django.contrib.auth.views import LogoutView
@@ -6,6 +7,32 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path("", views.index, name="index"),
     path("index-alternativo/", views.index_alternativo, name="index_alternativo"),
+
+    # --- REDIRECCIONES SEO PERMANENTES (HTTP 301) ---
+    # 1. Categorías antiguas que Google indexó previamente
+    path("categoria/audio-bluetooth/", RedirectView.as_view(url="/categoria/audio/", permanent=True)),
+    path("categoria/smart-pos-retail-tech/", RedirectView.as_view(url="/categoria/computacion/", permanent=True)),
+    path("categoria/gadgets-perifericos-tech/", RedirectView.as_view(url="/categoria/computacion/", permanent=True)),
+    path("categoria/accesorios-consumibles/", RedirectView.as_view(url="/categoria/computacion/", permanent=True)),
+    path("categoria/pos/", RedirectView.as_view(url="/categoria/computacion/", permanent=True)),
+    path("categoria/proteccion-garantias/", RedirectView.as_view(url="/", permanent=True)),
+    path("categoria/test-cat/", RedirectView.as_view(url="/", permanent=True)),
+
+    # 2. Secciones del menú principal que Google indexa como páginas individuales
+    path("categorias/", RedirectView.as_view(url="/#categorias", permanent=True)),
+    path("contacto/", RedirectView.as_view(url="/#contacto", permanent=True)),
+    path("nosotros/", RedirectView.as_view(url="/#acerca", permanent=True)),
+    path("acerca/", RedirectView.as_view(url="/#acerca", permanent=True)),
+    path("quienes-somos/", RedirectView.as_view(url="/#acerca", permanent=True)),
+    path("promociones/", RedirectView.as_view(url="/#promociones", permanent=True)),
+    path("ofertas/", RedirectView.as_view(url="/#promociones", permanent=True)),
+    path("destacados/", RedirectView.as_view(url="/#destacados", permanent=True)),
+    path("productos/", RedirectView.as_view(url="/#destacados", permanent=True)),
+    path("catalogo/", RedirectView.as_view(url="/#categorias", permanent=True)),
+    path("inicio/", RedirectView.as_view(url="/", permanent=True)),
+    path("home/", RedirectView.as_view(url="/", permanent=True)),
+    path("blog/", RedirectView.as_view(url="/", permanent=True)),
+
     path("categoria/<slug:slug>/", views.categoria_detail, name="categoria"),
     path("terminos/", views.terminos_condiciones, name="terminos"),
 
