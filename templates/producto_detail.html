@@ -111,13 +111,26 @@
                 border-radius: 16px;
                 margin-top: 25px;
             }
+        .producto-gallery-sticky {
+            position: relative;
+            text-align: center;
+            width: 100%;
+        }
+        @media (min-width: 901px) {
+            .producto-gallery-sticky {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 155px;
+                align-self: start;
+                z-index: 5;
+            }
         }
     </style>
 
     <div class="producto-grid-layout">
         
-        <!-- COLUMNA IZQUIERDA: Galería / Imagen del Producto -->
-        <div style="position: relative; text-align: center; width: 100%;">
+        <!-- COLUMNA IZQUIERDA: Galería / Imagen del Producto (Sticky) -->
+        <div class="producto-gallery-sticky">
             {% with imagenes=producto.todas_las_imagenes %}
             {% if imagenes|length > 1 %}
                 <!-- Galería Carrusel con Slide / Puntitos -->
